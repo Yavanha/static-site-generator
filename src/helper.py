@@ -24,27 +24,40 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
 
 
 def split_nodes_image(old_nodes):
+    return split_nodes_with_url(old_nodes, True)
+
+
+def split_nodes_link(old_nodes):
+    return split_nodes_with_url(old_nodes)
+
+
+def split_nodes_with_url(old_nodes, image=False):
     new_nodes = []
+    prefix = ""
+    text_type = TextType.LINK
+    if image:
+        text_type = TextType.IMAGE
+        prefix += "!"
+
     for node in old_nodes:
         if node.text_type != TextType.TEXT:
             new_nodes.append(node)
         else:
-            matches = extract_markdown_images(node.text)
-            texts = node.text.split('!')
-            i = 0
-            for text in texts:
-                alt, url = matches[i]
-                image = f"[{alt}]({url})"
-                if text and image not in text:
-                    new_nodes.append(TextNode(text, TextType.TEXT))
-                    continue
-                if len(image) <= len(text):
-                    new_nodes.append(TextNode(alt, TextType.IMAGE, url))
-                    i += 1
-                    split_text = text.split(")")[1]
-                    if split_text:
-                        new_nodes.append(TextNode(split_text, TextType.TEXT))
-            print(new_nodes)
+            matches = extract_markdown_images(
+                node.text) if image else extract_markdown_links(node.text)
+            if len(matches) == 0:
+                new_nodes.append(node)
+            else:
+                node_text = node.text
+                for alt, url in matches:
+
+                    delimiter = prefix + f"[{alt}]({url})"
+                    texts = node_text.split(delimiter, 1)
+                    if texts[0]:
+                        new_nodes.append(TextNode(texts[0], TextType.TEXT))
+                    new_nodes.append(TextNode(alt, text_type, url))
+                    node_text = texts[-1]
+    return new_nodes
 
 
 def extract_markdown_images(text):
