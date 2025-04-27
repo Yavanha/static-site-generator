@@ -4,5 +4,15 @@
         "plaintext": false,
         "markdown": false,
         "scminput": false
-    }
+    },
+    "python.REPL.enableREPLSmartSend": false,
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        "./src",
+        "-p",
+        "test_*.py"
+    ],
+    "python.testing.pytestEnabled": false,
+    "python.testing.unittestEnabled": true
 }

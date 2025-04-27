@@ -11,15 +11,15 @@ class TestHTMLNode(unittest.TestCase):
             props={"dir": "ltr", "style": "display: block;"},
         )
         self.assertEqual(node.props_to_html(),
-                         'dir="ltr" style="display: block;" ')
+                         ' dir="ltr" style="display: block;" ')
 
     def test_print(self):
         node = HTMLNode(
             "div",
-            children=[HTMLNode("p", value="this a text")],
-            props={"dir": "ltr", "style": "display: block;"},
+            value="this is a value",
+            props={"dir": "ltr", },
         )
-        node_str = "HtmlNode : tag : div value : None props : {'dir': 'ltr', 'style': 'display: block;'} children : [HtmlNode : tag : p value : this a text props : None children : None]"
+        node_str = "HtmlNode(tag=div, value=this is a value, props= dir=\"ltr\" , children=None)\n"
         self.assertEqual(node_str, node.__repr__())
 
     def test_raise_value_error(self):

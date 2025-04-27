@@ -1,17 +1,15 @@
-from textnode import TextNode, TextType
-from helper import extract_markdown_links, split_nodes_image, split_nodes_link
+
+
+from blocktype import extract_title
+from helper import copy_files, copy_from_static_to_public, generate_page
+PUBLIC_FOLDER = "public"
+STATIC_FOLDER_PATH = "src/static"
 
 
 def main():
-
-    node = TextNode(
-        "This is text with a link",
-        TextType.TEXT,
-    )
-
-    new_nodes = split_nodes_link([node])
-
-    print(new_nodes)
+    copy_from_static_to_public()
+    generate_page("src/content/index.md",
+                  "template.html", "public/index.html")
 
 
 main()
