@@ -11,32 +11,34 @@ PUBLIC_FOLDER = "public"
 STATIC_FOLDER_PATH = "src/static"
 
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(base_path, dir_path_content, template_path, dest_dir_path):
     files = os.listdir(dir_path_content)
     print(files)
     for file in files:
         file_path = os.path.join(dir_path_content, file)
         if os.path.isdir(file_path):
             next_dest_dir_path = os.path.join(dest_dir_path, file)
-            os.mkdir(next_dest_dir_path)
-            generate_pages_recursive(
-                file_path, template_path, next_dest_dir_path)
+            os.mkdir(os.path.join(base_path, next_dest_dir_path))
+            generate_pages_recursive(base_path,
+                                     file_path, template_path, next_dest_dir_path)
         if Path(file_path).suffix.lower() in {".md", ".markdown"}:
             next_dest_file_path = os.path.join(dest_dir_path, "index.html")
-            generate_page(file_path, template_path, next_dest_file_path)
+            generate_page(base_path, file_path,
+                          template_path, next_dest_file_path)
 
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(base_path, from_path, template_path, dest_path):
     print(
         f"Generating page from {from_path} to dest_path using {template_path}")
-    from_content = read_file(from_path)
-    template_content = read_file(template_path)
+    from_content = read_file(os.path.join(base_path, from_path))
+    template_content = read_file(os.path.join(base_path, template_path))
     html_content = markdown_to_html_node(from_content).to_html()
     title = extract_title(from_content)
     final_content = template_content.replace(
         "{{ Title }}", title).replace("{{ Content }}", html_content)
 
-    write_file(dest_path, final_content)
+    write_file(os.path.join(base_path, dest_path),
+               os.path.join(base_path, final_content))
 
 
 def read_file(path):
@@ -66,12 +68,13 @@ def copy_files(source, destination, files):
     copy_files(source, destination, files[1:])
 
 
-def copy_from_static_to_public():
-    if os.path.exists(PUBLIC_FOLDER):
-        shutil.rmtree(PUBLIC_FOLDER)
-    os.mkdir(PUBLIC_FOLDER)
-    listdir = os.listdir(STATIC_FOLDER_PATH)
-    copy_files(STATIC_FOLDER_PATH, PUBLIC_FOLDER, listdir)
+def copy_from_static_to_public(source, dest):
+
+    if os.path.exists(dest):
+        shutil.rmtree(dest)
+    os.mkdir(dest)
+    listdir = os.listdir(source)
+    copy_files(source, dest, listdir)
 
     # this is an exercice i just wanted to learn python
     # this code need hudge refactoring
