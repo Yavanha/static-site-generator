@@ -18,7 +18,7 @@ def generate_pages_recursive(base_path, dir_path_content, template_path, dest_di
         file_path = os.path.join(dir_path_content, file)
         if os.path.isdir(file_path):
             next_dest_dir_path = os.path.join(dest_dir_path, file)
-            os.mkdir(os.path.join(base_path, next_dest_dir_path))
+            os.mkdir(next_dest_dir_path)
             generate_pages_recursive(base_path,
                                      file_path, template_path, next_dest_dir_path)
         if Path(file_path).suffix.lower() in {".md", ".markdown"}:
@@ -30,15 +30,15 @@ def generate_pages_recursive(base_path, dir_path_content, template_path, dest_di
 def generate_page(base_path, from_path, template_path, dest_path):
     print(
         f"Generating page from {from_path} to dest_path using {template_path}")
-    from_content = read_file(os.path.join(base_path, from_path))
-    template_content = read_file(os.path.join(base_path, template_path))
+    from_content = read_file(from_path)
+    template_content = read_file(template_path)
     html_content = markdown_to_html_node(from_content).to_html()
     title = extract_title(from_content)
     final_content = template_content.replace(
-        "{{ Title }}", title).replace("{{ Content }}", html_content)
+        "{{ Title }}", title).replace("{{ Content }}", html_content).replace("href=\"", f"href=\"{base_path}").replace("src=\"", f"src=\"{base_path}")
 
-    write_file(os.path.join(base_path, dest_path),
-               os.path.join(base_path, final_content))
+    write_file(dest_path,
+               final_content)
 
 
 def read_file(path):
