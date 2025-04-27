@@ -11,7 +11,8 @@ def main():
     base_path = ""
     if len(argv) > 1:
         base_path = argv[1]
-    copy_from_static_to_public(STATIC_FOLDER_PATH, PUBLIC_FOLDER)
+    copy_from_static_to_public(
+        base_path + STATIC_FOLDER_PATH, base_path + PUBLIC_FOLDER)
     generate_pages_recursive(base_path, "content",
                              "template.html", "docs")
 
